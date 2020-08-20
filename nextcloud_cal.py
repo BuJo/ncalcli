@@ -49,10 +49,10 @@ def parse_info(data, name):
 def parse_date(date_str):
     pieces = date_str.split('T')
     if len(pieces) == 1:
-        dt = datetime.strptime(date_str, "%Y%m%d") + timedelta(hours=1)
+        dt = datetime.strptime(date_str, "%Y%m%d")
     else:
-        dt = datetime.strptime(date_str, "%Y%m%dT%H%M%SZ") + timedelta(hours=1)
-    dt.replace(tzinfo=timezone.utc)
+        date_str = re.sub(r'Z$', '+00:00', date_str)
+        dt = datetime.strptime(date_str, "%Y%m%dT%H%M%S%z")
     return dt
 
 
@@ -104,8 +104,8 @@ if __name__ == '__main__':
         if event['DSTART'].date() == date.today():
             datestr = "Today    "
         tz = pytz.timezone('Europe/London')
-        dst = tz.localize(event['DSTART']).dst()
-        timestr = (tz.localize(event['DSTART']) + dst).strftime("%H:%M")
+        dst = event['DSTART'].astimezone(tz).dst()
+        timestr = (event['DSTART'].astimezone(tz) + dst).strftime("%H:%M")
         # all-day events
         if timestr == '00:00':
             timestr = '-all-'
