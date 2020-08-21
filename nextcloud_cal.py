@@ -1,33 +1,27 @@
 #!/usr/bin/env python3
-# Sven Schirmer, 2016, schirmer@green-orca.com
-# requires ~/.config/nextcloud_cal.ini with following format
-# [DEFAULT]
-# user = guggus
-# pwd = guggus
-# url = https://odroid/remote.php/dav/calendars/guggus/default/
-# ssl = True | False (in case your certficate cannot be verified)
-# summary_length=20
-# lines_to_display=10
-# time_delta=20
+"""
+Python based command line extension to display Owncloud/Nextcloud calendar agenda.
 
+Sven Schirmer, 2016, schirmer@green-orca.com
+"""
+
+import os
+import sys
 import configparser
 import re
-import pytz
 from datetime import datetime, date, timedelta, timezone
 
 import caldav
-import os
-import sys
 
 
-# parse event data into dictionary
 def parse_info(data, name):
+    """ Parse event data into dictionary """
+
     events = re.split("END:VEVENT\r\nBEGIN:VEVENT\r\n|END:VEVENT\r\nEND:VCALENDAR\r\n\r\n", data)
-    for event in events:
-        pieces = event.split('\r\n')
+    for ev in events:
+        pieces = ev.split('\r\n')
         keys = []
         values = []
-        t_start = 0
         for piece in pieces:
             kv = piece.split(':')
             if kv[0] == 'SUMMARY' and kv[1] != "Alarm notification":
@@ -36,7 +30,6 @@ def parse_info(data, name):
             elif kv[0].split(';')[0] == 'DTSTART':
                 keys.append('DSTART')
                 values.append(parse_date(kv[1]))
-                t_start = values[-1]
             elif kv[0].split(';')[0] == 'DTEND':
                 t_end = parse_date(kv[1])
                 keys.append('DEND')
@@ -47,6 +40,8 @@ def parse_info(data, name):
 
 
 def parse_date(date_str):
+    """Parse RFC 3339 Date"""
+
     pieces = date_str.split('T')
     if len(pieces) == 1:
         dt = datetime.strptime(date_str, "%Y%m%d")
@@ -57,6 +52,8 @@ def parse_date(date_str):
 
 
 def get_dtstart(item):
+    """Get start date from event"""
+
     return item["DSTART"]
 
 
@@ -79,11 +76,11 @@ if __name__ == '__main__':
         if re.match(rf'.*/({cal_filter})/$', calendar.canonical_url) is None:
             continue
         props = calendar.get_properties([caldav.elements.dav.DisplayName(), ])
-        name = props[caldav.elements.dav.DisplayName().tag]
+        display_name = props[caldav.elements.dav.DisplayName().tag]
         results = calendar.date_search(date.today(),
                                        date.today() + timedelta(days=int(config['DEFAULT']['time_delta'])))
-        for ev in results:
-            event_data.append(parse_info(ev.data, name))
+        for event in results:
+            event_data.append(parse_info(event.data, display_name))
 
     # sort by datetime
     event_data = sorted(event_data, key=get_dtstart)

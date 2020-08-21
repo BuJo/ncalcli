@@ -16,14 +16,14 @@ flake8:
   stage: Static Analysis
   script:
   - pip install flake8
-  - flake8 --max-line-length=120 *.py
+  - flake8 --max-line-length=120 nextcloud_cal.py
 
 pylint:
   stage: Static Analysis
   allow_failure: true
   script:
   - pip install pylint
-  - pylint -d C0301 *.py
+  - pylint -d C0301,C0103 nextcloud_cal.py
 
 unit_test:
   stage: Test
