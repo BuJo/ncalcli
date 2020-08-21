@@ -1,0 +1,36 @@
+image: "python:3.7"
+
+default:
+  tags:
+    - docker
+
+before_script:
+  - python --version
+  - pip install -r requirements.txt
+
+stages:
+  - Static Analysis
+  - Test
+
+flake8:
+  stage: Static Analysis
+  script:
+  - pip install flake8
+  - flake8 --max-line-length=120 *.py
+
+pylint:
+  stage: Static Analysis
+  allow_failure: true
+  script:
+  - pip install pylint
+  - pylint -d C0301 *.py
+
+unit_test:
+  stage: Test
+  script:
+  - pwd
+  - ls -l
+  - export PYTHONPATH="$PYTHONPATH:."
+  - python -c "import sys;print(sys.path)"
+  - pip install pytest
+  - pytest
