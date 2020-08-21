@@ -28,8 +28,8 @@ END:VCALENDAR\r
 '''
 
     def test_parse_info(self):
-        info = nextcloud_cal.parse_info(Test.EVENT, 'title')
-        assert info['CAL'] == 'title'
-        assert info['SUMMARY'] == 'Daily'
-        assert info['DSTART'] == datetime(2020, 8, 21, 8, 30, tzinfo=timezone.utc)
-        assert info['DEND'] == datetime(2020, 8, 21, 9, 15, tzinfo=timezone.utc)
+        for info in nextcloud_cal.parse_info(Test.EVENT, 'title'):
+            assert info.calendar == 'title'
+            assert info.summary == 'Daily'
+            assert info.start == datetime(2020, 8, 21, 8, 30, tzinfo=timezone.utc)
+            assert info.end == datetime(2020, 8, 21, 9, 15, tzinfo=timezone.utc)

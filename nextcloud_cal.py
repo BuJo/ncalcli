@@ -9,52 +9,28 @@ import os
 import sys
 import configparser
 import re
+from dataclasses import dataclass
 from datetime import datetime, date, timedelta, timezone
 
 import caldav
+from icalendar import Calendar
+
+
+@dataclass(order=True)
+class Event:
+    start: datetime
+    end: datetime
+    summary: str
+    calendar: str
 
 
 def parse_info(data, name):
     """ Parse event data into dictionary """
 
-    events = re.split("END:VEVENT\r\nBEGIN:VEVENT\r\n|END:VEVENT\r\nEND:VCALENDAR\r\n\r\n", data)
-    for ev in events:
-        pieces = ev.split('\r\n')
-        keys = []
-        values = []
-        for piece in pieces:
-            kv = piece.split(':')
-            if kv[0] == 'SUMMARY' and kv[1] != "Alarm notification":
-                keys.append(kv[0])
-                values.append(kv[1])
-            elif kv[0].split(';')[0] == 'DTSTART':
-                keys.append('DSTART')
-                values.append(parse_date(kv[1]))
-            elif kv[0].split(';')[0] == 'DTEND':
-                t_end = parse_date(kv[1])
-                keys.append('DEND')
-                values.append(t_end)
-        keys.append('CAL')
-        values.append(name)
-        return dict(list(zip(keys, values)))
+    cal = Calendar.from_ical(data)
 
-
-def parse_date(date_str):
-    """Parse RFC 3339 Date"""
-
-    pieces = date_str.split('T')
-    if len(pieces) == 1:
-        dt = datetime.strptime(date_str, "%Y%m%d")
-    else:
-        date_str = re.sub(r'Z$', '+00:00', date_str)
-        dt = datetime.strptime(date_str, "%Y%m%dT%H%M%S%z")
-    return dt
-
-
-def get_dtstart(item):
-    """Get start date from event"""
-
-    return item["DSTART"]
+    for ev in cal.subcomponents:
+        yield Event(calendar=name, start=ev.decoded('DTSTART'), end=ev.decoded('DTEND'), summary=ev.decoded('SUMMARY').decode('UTF-8'))
 
 
 if __name__ == '__main__':
@@ -79,38 +55,38 @@ if __name__ == '__main__':
         display_name = props[caldav.elements.dav.DisplayName().tag]
         results = calendar.date_search(date.today(),
                                        date.today() + timedelta(days=int(config['DEFAULT']['time_delta'])))
-        for event in results:
-            event_data.append(parse_info(event.data, display_name))
+        for result_entry in results:
+            for event in parse_info(result_entry.data, display_name):
+                event_data.append(event)
 
-    # sort by datetime
-    event_data = sorted(event_data, key=get_dtstart)
+    event_data.sort()
 
     currentDate = date.today() - timedelta(days=1)
     i = 0
 
     # output
-    for event in event_data:
+    for result_entry in event_data:
         if i >= int(config['DEFAULT']['lines_to_display']):
             break
-        datestr = event['DSTART'].date().strftime('%a %d.%m')
+        datestr = result_entry.start.date().strftime('%a %d.%m')
         # avoid duplicate date output
-        if event['DSTART'].date() == currentDate:
+        if result_entry.start.date() == currentDate:
             datestr = "         "
         else:
-            currentDate = event['DSTART'].date()
+            currentDate = result_entry.start.date()
             # replace todays date with "Today"
-        if event['DSTART'].date() == date.today():
+        if result_entry.start.date() == date.today():
             datestr = "Today    "
-        timestr = (event['DSTART'].astimezone(LOCAL_TIMEZONE)).strftime("%H:%M")
+        timestr = (result_entry.start.astimezone(LOCAL_TIMEZONE)).strftime("%H:%M")
         # all-day events
         if timestr == '00:00':
             timestr = '-all-'
-        if 'DEND' in event.keys():
-            durationstr = "%.2f" % ((event['DEND'] - event['DSTART']).seconds / 60.0 / 60)
+        if result_entry.end:
+            durationstr = "%.2f" % ((result_entry.end - result_entry.start).seconds / 60.0 / 60)
         else:
             durationstr = ''
 
         # actual output generation with colors depending on keywords
-        summary = event['SUMMARY'][:int(config['DEFAULT']['summary_length'])]
+        summary = result_entry.summary[:int(config['DEFAULT']['summary_length'])]
         sys.stdout.write(datestr + '  ' + timestr + '  ' + durationstr + ' ' + summary + os.linesep)
         i = i + 1
