@@ -5,7 +5,7 @@ Python based command line extension to display Owncloud/Nextcloud calendar agend
 ## Requirements
 
 - Python3
-- caldav library (pip3 install caldav)
+- caldav library (`pip3 install -r requirements.txt`)
 
 ## Usage
 
