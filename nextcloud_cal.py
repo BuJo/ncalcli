@@ -61,6 +61,7 @@ def get_dtstart(item):
 
 
 if __name__ == '__main__':
+    LOCAL_TIMEZONE = datetime.now(timezone(timedelta(0))).astimezone().tzinfo
     config = configparser.ConfigParser()
     config.read(os.path.expanduser('~/') + '.config/nextcloud_cal.ini')
     cal_filter = '|'.join(config['DEFAULT']['cals'].split(','))
@@ -103,9 +104,7 @@ if __name__ == '__main__':
             # replace todays date with "Today"
         if event['DSTART'].date() == date.today():
             datestr = "Today    "
-        tz = pytz.timezone('Europe/London')
-        dst = event['DSTART'].astimezone(tz).dst()
-        timestr = (event['DSTART'].astimezone(tz) + dst).strftime("%H:%M")
+        timestr = (event['DSTART'].astimezone(LOCAL_TIMEZONE)).strftime("%H:%M")
         # all-day events
         if timestr == '00:00':
             timestr = '-all-'
