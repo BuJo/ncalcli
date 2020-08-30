@@ -94,5 +94,5 @@ if __name__ == '__main__':
 
         # actual output generation with colors depending on keywords
         summary = result_entry.summary[:int(config['DEFAULT']['summary_length'])]
-        sys.stdout.write(datestr + '  ' + timestr + '  ' + durationstr + ' ' + summary + os.linesep)
+        sys.stdout.write(datestr + '\t' + timestr + '\t' + durationstr + '\t' + summary + os.linesep)
         i = i + 1
