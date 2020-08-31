@@ -19,6 +19,7 @@ from icalendar import Calendar
 
 @dataclass(order=True)
 class Event:
+    """ Calendar Event """
     start: datetime
     end: datetime
     summary: str
@@ -31,7 +32,10 @@ def parse_info(data, name):
     cal = Calendar.from_ical(data)
 
     for ev in cal.subcomponents:
-        yield Event(calendar=name, start=ev.decoded('DTSTART'), end=ev.decoded('DTEND'), summary=ev.decoded('SUMMARY').decode('UTF-8'))
+        estart = ev.decoded('DTSTART')
+        eend = ev.decoded('DTEND')
+        esummary = ev.decoded('SUMMARY').decode('UTF-8')
+        yield Event(calendar=name, start=estart, end=eend, summary=esummary)
 
 
 if __name__ == '__main__':
@@ -94,7 +98,7 @@ if __name__ == '__main__':
         else:
             durationstr = ''
 
-        # actual output generation with colors depending on keywords
+        # output
         summary = result_entry.summary[:int(config['DEFAULT']['summary_length'])]
         sys.stdout.write(datestr + '\t' + timestr + '\t' + durationstr + '\t' + summary + os.linesep)
         i = i + 1
