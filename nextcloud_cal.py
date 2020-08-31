@@ -35,14 +35,17 @@ def parse_info(data, name):
 
 
 if __name__ == '__main__':
-    if len(sys.argv) > 1:
-        today = isoparse(sys.argv[1])
-    else:
-        today = date.today()
-
     LOCAL_TIMEZONE = datetime.now(timezone(timedelta(0))).astimezone().tzinfo
     config = configparser.ConfigParser()
     config.read(os.path.expanduser('~/') + '.config/nextcloud_cal.ini')
+
+    if len(sys.argv) > 1:
+        today = isoparse(sys.argv[1])
+        tdelta = 1
+    else:
+        today = date.today()
+        tdelta = timedelta(days=int(config['DEFAULT']['time_delta']))
+
     cal_filter = '|'.join(config['DEFAULT']['cals'].split(','))
     # create client
     client = caldav.DAVClient(config['DEFAULT']['url'],
@@ -59,8 +62,7 @@ if __name__ == '__main__':
             continue
         props = calendar.get_properties([caldav.elements.dav.DisplayName(), ])
         display_name = props[caldav.elements.dav.DisplayName().tag]
-        results = calendar.date_search(today,
-                                       today + timedelta(days=int(config['DEFAULT']['time_delta'])))
+        results = calendar.date_search(today, today + tdelta)
         for result_entry in results:
             for event in parse_info(result_entry.data, display_name):
                 event_data.append(event)
