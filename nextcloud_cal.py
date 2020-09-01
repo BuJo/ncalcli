@@ -68,6 +68,7 @@ class Event:
             other.start, other.end, other.summary, other.calendar)
         return NotImplemented
 
+
 def parse_info(data, name):
     """ Parse event data into dictionary """
 
