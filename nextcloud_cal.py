@@ -45,7 +45,7 @@ if __name__ == '__main__':
 
     if len(sys.argv) > 1:
         today = isoparse(sys.argv[1])
-        tdelta = 1
+        tdelta = timedelta(days=1)
     else:
         today = date.today()
         tdelta = timedelta(days=int(config['DEFAULT']['time_delta']))
