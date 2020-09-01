@@ -9,7 +9,6 @@ import os
 import sys
 import configparser
 import re
-from dataclasses import dataclass
 from datetime import datetime, date, timedelta, timezone
 from dateutil.parser import isoparse
 
@@ -17,7 +16,6 @@ import caldav
 from icalendar import Calendar
 
 
-@dataclass(order=True)
 class Event:
     """ Calendar Event """
     start: datetime
@@ -25,6 +23,50 @@ class Event:
     summary: str
     calendar: str
 
+    def __init__(self, start: datetime, end: datetime, summary: str, calendar: str) -> None:
+        self.start = start
+        self.end = end
+        self.summary = summary
+        self.calendar = calendar
+
+    def __repr__(self):
+        return f'Event()'
+
+    def __eq__(self, other):
+        if other.__class__ is self.__class__:
+            return (self.start, self.end, self.summary, self.calendar) == (
+            other.start, other.end, other.summary, other.calendar)
+        return NotImplemented
+
+    def __ne__(self, other):
+        if other.__class__ is self.__class__:
+            return (self.start, self.end, self.summary, self.calendar) != (
+            other.start, other.end, other.summary, other.calendar)
+        return NotImplemented
+
+    def __lt__(self, other):
+        if other.__class__ is self.__class__:
+            return (self.start, self.end, self.summary, self.calendar) < (
+            other.start, other.end, other.summary, other.calendar)
+        return NotImplemented
+
+    def __le__(self, other):
+        if other.__class__ is self.__class__:
+            return (self.start, self.end, self.summary, self.calendar) <= (
+            other.start, other.end, other.summary, other.calendar)
+        return NotImplemented
+
+    def __gt__(self, other):
+        if other.__class__ is self.__class__:
+            return (self.start, self.end, self.summary, self.calendar) > (
+            other.start, other.end, other.summary, other.calendar)
+        return NotImplemented
+
+    def __ge__(self, other):
+        if other.__class__ is self.__class__:
+            return (self.start, self.end, self.summary, self.calendar) >= (
+            other.start, other.end, other.summary, other.calendar)
+        return NotImplemented
 
 def parse_info(data, name):
     """ Parse event data into dictionary """
