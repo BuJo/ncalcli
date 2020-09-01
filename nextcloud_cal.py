@@ -30,42 +30,42 @@ class Event:
         self.calendar = calendar
 
     def __repr__(self):
-        return f'Event()'
+        return f'Event({self.start},{self.end},{self.summary},{self.calendar})'
 
     def __eq__(self, other):
         if other.__class__ is self.__class__:
             return (self.start, self.end, self.summary, self.calendar) == (
-            other.start, other.end, other.summary, other.calendar)
+                other.start, other.end, other.summary, other.calendar)
         return NotImplemented
 
     def __ne__(self, other):
         if other.__class__ is self.__class__:
             return (self.start, self.end, self.summary, self.calendar) != (
-            other.start, other.end, other.summary, other.calendar)
+                other.start, other.end, other.summary, other.calendar)
         return NotImplemented
 
     def __lt__(self, other):
         if other.__class__ is self.__class__:
             return (self.start, self.end, self.summary, self.calendar) < (
-            other.start, other.end, other.summary, other.calendar)
+                other.start, other.end, other.summary, other.calendar)
         return NotImplemented
 
     def __le__(self, other):
         if other.__class__ is self.__class__:
             return (self.start, self.end, self.summary, self.calendar) <= (
-            other.start, other.end, other.summary, other.calendar)
+                other.start, other.end, other.summary, other.calendar)
         return NotImplemented
 
     def __gt__(self, other):
         if other.__class__ is self.__class__:
             return (self.start, self.end, self.summary, self.calendar) > (
-            other.start, other.end, other.summary, other.calendar)
+                other.start, other.end, other.summary, other.calendar)
         return NotImplemented
 
     def __ge__(self, other):
         if other.__class__ is self.__class__:
             return (self.start, self.end, self.summary, self.calendar) >= (
-            other.start, other.end, other.summary, other.calendar)
+                other.start, other.end, other.summary, other.calendar)
         return NotImplemented
 
 
