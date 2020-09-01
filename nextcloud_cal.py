@@ -45,8 +45,6 @@ class Event:
         return NotImplemented
 
     def __lt__(self, other):
-        if other.start.__class__ == datetime.date or self.start.__class__ == datetime.date:
-            return True
         if other.__class__ is self.__class__:
             return (self.start, self.end, self.summary, self.calendar) < (
             other.start, other.end, other.summary, other.calendar)
@@ -80,6 +78,8 @@ def parse_info(data, name):
         estart = ev.decoded('DTSTART')
         eend = ev.decoded('DTEND')
         esummary = ev.decoded('SUMMARY').decode('UTF-8')
+        if estart.__class__ != datetime:
+            continue
         yield Event(calendar=name, start=estart, end=eend, summary=esummary)
 
 
