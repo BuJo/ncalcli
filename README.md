@@ -5,7 +5,7 @@ Python based command line extension to display Owncloud/Nextcloud calendar agend
 ## Requirements
 
 - Python3
-- caldav library (`pip3 install -r requirements.txt`)
+- `pip3 install -r requirements.txt`
 
 ## Usage
 
@@ -13,10 +13,11 @@ Python based command line extension to display Owncloud/Nextcloud calendar agend
 
 ```ini
 [DEFAULT]
-user = user
-pwd = guggus
-url = https://yourserver/remote.php/dav/calendars/user/default/
-ssl = True # || False (in case your certificate can't be verified)
+user=user
+pwd=guggus
+url=https://yourserver/remote.php/dav/calendars/user/default/
+cals=personal
+ssl=True # || False (in case your certificate can't be verified)
 summary_length=20
 lines_to_display=10
 time_delta=20
