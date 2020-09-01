@@ -45,7 +45,7 @@ class Event:
         return NotImplemented
 
     def __lt__(self, other):
-        if other.__class__ == datetime.date or self.__class__ == datetime.date:
+        if other.start.__class__ == datetime.date or self.start.__class__ == datetime.date:
             return True
         if other.__class__ is self.__class__:
             return (self.start, self.end, self.summary, self.calendar) < (
