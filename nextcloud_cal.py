@@ -96,7 +96,8 @@ if __name__ == '__main__':
         if timestr == '00:00':
             timestr = '-all-'
         if result_entry.end:
-            durationstr = "%.2f" % ((result_entry.end - result_entry.start).seconds / 60.0 / 60)
+            duration = ((result_entry.end - result_entry.start).seconds / 60.0 / 60)
+            durationstr = f'{duration:.2f}'
         else:
             durationstr = ''
 
