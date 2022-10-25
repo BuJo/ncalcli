@@ -1,10 +1,10 @@
 # ncalcli
 
-Python based command line extension to display Owncloud/Nextcloud calendar agenda.
+Python based command line extension to display ownCloud/Nextcloud calendar agenda.
 
 ## Requirements
 
-- Python3
+- Python3.7+
 - `pip3 install -r requirements.txt`
 
 ## Usage
