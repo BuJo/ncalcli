@@ -1,2 +1,2 @@
-caldav==1.2.1
+caldav==2.2.6
 icalendar==5.0.5
